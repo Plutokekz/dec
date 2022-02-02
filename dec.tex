@@ -1,0 +1,188 @@
+\documentclass{beamer}
+%\usepackage{pgfpages}
+\setbeameroption{show notes on second screen}
+
+\usepackage{hyperref}
+\usetheme{Luebeck}
+\usecolortheme{magpie}
+
+\beamertemplatenavigationsymbolsempty
+\title{Unsupervised Deep Embedding for Clustering Analysis}
+\subtitle{Bachelorseminar Data Mining}
+\author{Lukas Mahr}
+\institute{Ludwig-Maximilians-Universität München}
+\date{}
+\graphicspath{{images/}}
+\setbeamertemplate{headline}{}
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\begin{frame}[plain]{Roadmap}
+\tableofcontents
+\end{frame}
+
+\section{Clustering of high dimensional data}
+\begin{frame}[t]{Clustering of high dimensional data}\vspace{4pt}
+\begin{itemize}
+\item Probleme
+%\pause
+\begin{itemize}
+\item unwichtige Features
+%\pause
+\item lange Cluster Zeiten
+%\pause
+\item Komplexität von z.B. KMeans
+%\pause
+\item $O(n^{dk+1})^{\text{\cite{Kmeans}}}$k=anz. Clusters, n=anz. Elemente, d=Dimension
+\end{itemize}
+%\pause
+\item Idee / Lösungsansatz 
+\begin{itemize}
+%\pause
+\item Feature/Dimension Reduktion
+%\pause
+\item in Abhängigkeit der Clustere
+\end{itemize}
+\end{itemize}
+\note{viele Daten Punkte viele Distanzen zu berechnen
+schwierig zu visualisieren ohne die Dimensionen zu reduzieren
+Komplexität von Kmeans die exponentiell ansteigt}
+\end{frame}
+
+\section{Einleitung zu Neuronalen Netzen}
+\subsection{Idee}
+\begin{frame}[t]{Einleitung zu Neuronalen Netzen}\vspace{4pt}
+Idee
+
+--- ? ---
+\end{frame}
+
+    
+\subsection{Künstliches Neuron}
+\begin{frame}[t]{Einleitung zu Neuronalen Netzen}\vspace{4pt}
+Künstlichen Neurons
+\begin{figure}
+    \centering
+        \includegraphics[width=0.8\textwidth]{ArtificialNeuronModel_deutsch_invers.png}
+		\tiny\caption{Darstellung eines künstlichen Neurons mit seinen Elementen \tiny\url{https://de.wikipedia.org/wiki/Datei:ArtificialNeuronModel_deutsch.png}}
+\end{figure}
+\note{
+$x_1, ..., x_n$ sind die input variablen, jede der Eingabe variablen besitzt ein
+Gewicht, $w_{1j}, ..., w_{nj}$. Diese werden Multipliziert und davon dann die summe berechnet. Hier die Übertragungsfunktion. Dazu wird ein Bias, in dem Fall der Schwellenwert gerechnet. Als letztes gibt es noch die Aktivierungsfunktion die meistens 
+einen Wert zwischen 0 und 1 zurückgibt. Das ist dann der input für das nächste Neuron. 
+}
+
+
+\end{frame}
+
+\subsection{Layer/Schicht}
+\begin{frame}[t]{Einleitung zu Neuronalen Netzen}\vspace{4pt}
+Layer/Schichten
+\begin{figure}
+    \centering
+        \includegraphics[width=0.8\textwidth]{network-layers-invertiert.png}
+		\tiny\caption{Deep learning Künstliches neuronales Netz maschinelles lernen Apache MXNet - mehrschichtige PNG \tiny\url{https://de.cleanpng.com/png-x3zkr7/}}
+\end{figure}
+\note{Layer/Schicht sind mehrere Neuronen die mit allen Neuronen des nächsten Layer/Schicht verbunden sind. Alle Neuronen in einem Layer haben die gleiche Aktivierungsfunktion. Hidden Layer haben meistens die Aktivierungsfunktion rectified linear, da diese recht einfach und schnell zu berchnen ist. Das outputlayer hat meistens eine etwas kompliziertere Funktion wie softmax oder sigmoid. Abhängig von der Aufgabe des Netzwerkes. Letztes Layer hier direkt mit dem Loss}
+\end{frame}
+
+\subsection{Aktivierungsfunktion}
+\begin{frame}[t]{Einleitung zu Neuronalen Netzen}\vspace{4pt}
+Aktivierungsfunktionen
+\begin{figure}
+    \centering
+        \includegraphics[width=0.4\textwidth]{Activation_rectified_linear.png}
+		\tiny\caption{Rectifier-Aktivierungsfunktion \tiny\url{https://de.wikipedia.org/wiki/Datei:Activation_rectified_linear.svg}}
+		\includegraphics[width=0.4\textwidth]{Sigmoid-function.png}
+		\tiny\caption{Sigmoide Funktion mit Steigungsmaß
+		\textcolor{red}{a}=5 sowie
+		\textcolor{blue}{a} = 10 \tiny\url{https://de.wikipedia.org/wiki/Datei:Sigmoid-function.svg}}
+\end{figure}
+\note{alles negativ ist wird bei relu zu 0 während bei sigmoid, abhängig von der Steigung Werte zwischen -1 und 1 möglich sind}
+\end{frame}
+
+
+    
+\subsection{Loss/Kostenfunktion}
+\begin{frame}[t]{Einleitung zu Neuronalen Netzen}\vspace{4pt}
+Loss/Kostenfunktion
+
+\begin{figure}
+
+\center
+
+\textbf{Mean Squared Error}\par\medskip
+$MSE=\frac{1}{n}\sum^{n}_{i=1}(Y_i - \hat{Y}_i)^2$
+
+\vspace{2em}
+\textbf{Mean absolute error}\par\medskip
+$MAE=\frac{\sum^{n}_{i=1}|\hat{y_i}- y_i}{n}$
+
+\vspace{2em}
+\textbf{Binary Cross-Entropy}\par\medskip
+$H(y, \hat{y})=-\frac{1}{n}\sum^{n}_{i=1} y_i\cdot \log({\hat{y_i}}) + (1-y_i)\cdot\log({1-\hat{y_i}}))$
+\vspace{1.5em}
+\caption{\tiny\url{https://en.wikipedia.org/wiki/Mean_squared_error\#Predictor}
+\tiny\url{https://en.wikipedia.org/wiki/Mean_absolute_error}
+{\fontsize{5}{6}\selectfont \url{https://towardsdatascience.com/understanding-binary-cross-entropy-log-loss-a-visual-explanation-a3ac6025181a}}
+}
+\end{figure}
+\note{Man berechnet immer den unterschied zwischen den wahren labeln und den predicteden labeln um zu erkenne wie weit diese auseinander liegen. Es wird immer versucht den Loss zu minimieren. Also ein Minimum der Kostenfunktion zu finden.
+Die Parameter der Funktion, welche angepasst werden müssen sind alle weights und biases der einzelnen Neuronen und den Layern.}
+\end{frame}
+
+\subsection{Backpropagation mit Gradient descent}
+\begin{frame}[t]{Einleitung zu Neuronalen Netzen}\vspace{4pt}
+Backpropagation mit Gradient descent
+
+\begin{figure}
+    \centering
+        \includegraphics[width=0.5\textwidth]{1024px-Gradient_descent_invertiert.svg.png}
+		\tiny\caption{Illustration of gradient descent on a series of \href{https://en.wikipedia.org/wiki/Level_set}{level sets} \tiny\url{https://en.wikipedia.org/wiki/File:Gradient_descent.svg}}
+\end{figure}
+\note{Über Backpropagation wird hier mit z.B Gradient Descent die Loass funktion minimiert. Der Gradient der Loss/ Kostenfunktion wird für alle wigths and biases gleichzeitig berechnet. Man kann sich das vorstellen, wie eine Kugel die man einen in einer Hügellandschaft rollen lässt ein kleinen schritten und zwischen den schritten immer nach der Steigung des Abhanges schaut und dabei versucht die Kugel in das tiefste Tal zu bekommen. }
+\end{frame}
+
+\section{Autoencoders}
+	\subsection{Idee}
+	\subsection{Aufbau}
+\begin{frame}[t]{Autoencoders}\vspace{4pt}
+Idee
+Aufbau
+Bottelneck
+
+\end{frame}
+
+\section[]{Stecked Autoencoders}
+	\subsection{Idee}
+	\subsection{Aufbau}
+\begin{frame}[t]{Stacked Autoencoders}\vspace{4pt}
+Idee
+Aufbau
+\end{frame}
+
+\begin{frame}[t]{Vorherige Arbeiten}\vspace{4pt}
+andere Clustering algorithmen ?
+andere Dimensions-Reduktions-algorithmen
+\end{frame}
+
+\begin{frame}[t]{Von wem ist das Paper}\vspace{4pt}
+macvht hier kein sinn kommt am anfang
+\end{frame}
+
+
+\section[]{}
+\begin{frame}[t]{Referenzen}\vspace{4pt}
+\begin{thebibliography}{10}
+\bibitem{Kmeans}
+\alert{k-means clustering}
+\newblock  {\url{https://en.wikipedia.org/wiki/K-means_clustering\#Complexity}}
+\end{thebibliography}
+
+\end{frame}
+
+\end{document}
