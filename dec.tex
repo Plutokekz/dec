@@ -3,15 +3,24 @@
 \setbeameroption{show notes on second screen}
 
 \usepackage{hyperref}
+\usepackage{xcolor}
+%\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
 \usetheme{Luebeck}
 \usecolortheme{magpie}
 
+\definecolor{Turquoise}{rgb}{0.0, 1.0, 0.94}
+
 \beamertemplatenavigationsymbolsempty
+
+
 \title{Unsupervised Deep Embedding for Clustering Analysis}
 \subtitle{Bachelorseminar Data Mining}
 \author{Lukas Mahr}
 \institute{Ludwig-Maximilians-Universität München}
 \date{}
+
+
 \graphicspath{{images/}}
 \setbeamertemplate{headline}{}
 \begin{document}
@@ -56,9 +65,36 @@ Komplexität von Kmeans die exponentiell ansteigt}
 \section{Einleitung zu Neuronalen Netzen}
 \subsection{Idee}
 \begin{frame}[t]{Einleitung zu Neuronalen Netzen}\vspace{4pt}
-Idee
-
---- ? ---
+\begin{center}
+\begin{itemize}
+\large\item[] Nicht-lineare statistische Modelle zur Informationsverarbeitung
+\large\item[] Informationsverarbeitung umfasst hierbei unter anderem
+\begin{itemize}
+\item[] Klassifikation
+\item[] Prognosenerstellung
+\end{itemize}
+\large\item[] Units der Neuronalen Netze angelehnt an Neuronen
+\begin{itemize}
+\item[] Inputs zusammenfassen
+\item[] Mit Schwellenwert vergleichen bzw. aktivieren
+\end{itemize}
+\large\item[] Verbindungen zwischen Units angelehnt an Synapsen
+\begin{itemize}
+\item[] Gewichtung mit verstärkender oder schwächender Wirkung
+\end{itemize}
+\end{itemize}
+\end{center}
+\note{
+wofür braucht man neuronale Netze\\
+- Klassifizierung von Daten\\
+- Prognose eines bestimmten Wertes\\ 
+- Neuronen an Neuronen in unserem Gehirn angelehnt\\
+- Verbindungen zwischen Künstlichen Neuronen an Synapsen angelehnt\\
+- supervised learning = überwachtes lernen\\
+-- man besitzt Daten mit Beschriftungen (labels)\\
+- unsperviesed learning nicht überwachtes lernen\\
+-- unbeschriftete Daten, also es sind keine labels vorhanden\\
+}
 \end{frame}
 
     
@@ -95,12 +131,12 @@ Layer/Schichten
 Aktivierungsfunktionen
 \begin{figure}
     \centering
-        \includegraphics[width=0.4\textwidth]{Activation_rectified_linear.png}
+        \includegraphics[width=0.4\textwidth]{Activation_rectified_linear_invertiert.png}
 		\tiny\caption{Rectifier-Aktivierungsfunktion \tiny\url{https://de.wikipedia.org/wiki/Datei:Activation_rectified_linear.svg}}
-		\includegraphics[width=0.4\textwidth]{Sigmoid-function.png}
+		\includegraphics[width=0.4\textwidth]{Sigmoid-function_invertiert.png}
 		\tiny\caption{Sigmoide Funktion mit Steigungsmaß
-		\textcolor{red}{a}=5 sowie
-		\textcolor{blue}{a} = 10 \tiny\url{https://de.wikipedia.org/wiki/Datei:Sigmoid-function.svg}}
+		\textcolor{Turquoise}{a}=5 sowie
+		\textcolor{yellow}{a} = 10 \tiny\url{https://de.wikipedia.org/wiki/Datei:Sigmoid-function.svg}}
 \end{figure}
 \note{alles negativ ist wird bei relu zu 0 während bei sigmoid, abhängig von der Steigung Werte zwischen -1 und 1 möglich sind}
 \end{frame}
@@ -148,13 +184,68 @@ Backpropagation mit Gradient descent
 \end{frame}
 
 \section{Autoencoders}
-	\subsection{Idee}
-	\subsection{Aufbau}
+\subsection{Idee}
 \begin{frame}[t]{Autoencoders}\vspace{4pt}
-Idee
-Aufbau
-Bottelneck
+\begin{center}
+\Huge{\begin{itemize}
+ \item[] Idee
+ \begin{itemize}
+ 	\LARGE\item[-] Der Input ist der Output
+	\LARGE\item[-] Engpass in der Mitte
+ \end{itemize}
+\note{Ein Autoencoder ist ein feedforward Neural network, was versucht den input zu Kopieren.
+Das hört sich im ersten Moment nutzlos an, hat aber doch ein paar Anwendungsmöglichkeiten. Dazu gehört z.B Denosing oder Reduktion des Features Spaces}
+\end{itemize}}
+\end{center}
 
+
+
+\end{frame}
+
+\subsection{Aufbau}
+\begin{frame}[t]{Autoencoders}\vspace{4pt}
+\begin{figure}
+\center
+\begin{tikzpicture}
+		\node at (0, 0)[](input){Input};
+         \node at (2,0) [rectangle,minimum width = 6cm, minimum height = 1cm,rotate=90, draw] (c100) {Encoder};
+        \node at (4,0) [rectangle,minimum width = 3cm, minimum height = 1cm,rotate=90, draw] (v100) {Bottleneck};
+                 \node at (6,0) [rectangle, minimum width = 6cm, minimum height = 1cm, rotate=90, draw] (v200) {Decoder};
+        		\node at (8, 0)[](output){Output};         
+        \draw (c100)[-stealth] -- (v100);
+        \draw (v100)[-stealth] -- (v200);
+        \draw (input)[-stealth] -- (c100);
+        \draw (v200)[-stealth] -- (output);
+    \end{tikzpicture}
+    \caption{Einfaches Autoencoder Model}
+\end{figure}
+\note{
+\begin{itemize}
+\item Aufbau, Das Netzwerk besteht im Grunde aus 2 Teilen.
+\item Encoder und Decoder
+\item Encoder Transformiert die Input Daten in eine kleinere gewünschte Dimension
+\item Decoder Transformiert die Daten aus der Kleinen Dimension zurück in die Orginal Dimensionen.
+\item Hoffnung das der Encoder die Daten auf die Wichtigsten Features reduziert.
+\end{itemize}}
+\end{frame}
+
+
+\begin{frame}[t]{Autoencoders}\vspace{4pt}
+\begin{figure}
+\center
+\includegraphics[scale=0.315]{AutoencoderResult.png}
+{\fontsize{5}{6}\selectfont \caption{Orginal und Decoded Bilder}}
+\includegraphics[scale=0.315]{DenosingAutoencoderResult.png}
+{\fontsize{5}{6}\selectfont \caption{Noisy und Decoded Bilder}}
+\end{figure}
+\tiny{\url{https://github.com/Plutokekz/dec/blob/main/Autoencoders.ipynb}}
+\note{
+\begin{itemize}
+\item 784 input zu 10 zu 784 (28*28)
+\item Bottleneck size = 10 oder feature redutktion auf 10
+\item Random noise 
+\end{itemize}
+}
 \end{frame}
 
 \section[]{Stecked Autoencoders}
@@ -163,6 +254,15 @@ Bottelneck
 \begin{frame}[t]{Stacked Autoencoders}\vspace{4pt}
 Idee
 Aufbau
+\note{
+Stacked Autoincoders ist genau das was der name Sagt.\\
+mehrere Autoencoder hintereinander.\\
+man started mit einem Autoencoder, den man Trainniert.\\
+dann entfernt man den decoder Teil\\
+und setzt an diese stelle den nächsten Autoencoder, wird wieder trainniert\\
+bis die gewünschte anzahl der stacks erreicht ist.\\
+Besonderheit man trainiert die folgenden Autoencoder mit dem Output des vorigen encoders.\\
+}
 \end{frame}
 
 \begin{frame}[t]{Vorherige Arbeiten}\vspace{4pt}
