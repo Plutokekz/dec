@@ -34,35 +34,55 @@
 \tableofcontents
 \end{frame}
 
-\section{Clustering of high dimensional data}
-\begin{frame}[t]{Clustering of high dimensional data}\vspace{4pt}
+\section{Clustern von Daten mit hohen Dimensionen}
+\begin{frame}[t]{Clustern von Daten mit hohen Dimensionen}\vspace{4pt}
 \begin{itemize}
-\item Probleme
+\item Problem
+\begin{itemize}
+\item Gaussian Mixture Models, KMeans
 %\pause
 \begin{itemize}
-\item unwichtige Features
+\item Abstandsmetriken sind beschränkt auf den ursprünglichen Datendimensionen
 %\pause
-\item lange Cluster Zeiten
+\item unwirksam wenn Datendimension hoch sind\cite{steinbach}
 %\pause
-\item Komplexität von z.B. KMeans
-%\pause
-\item $O(n^{dk+1})^{\text{\cite{Kmeans}}}$k=anz. Clusters, n=anz. Elemente, d=Dimension
+\end{itemize}
+\item Variationen von KMeans für Daten mit hohen Dimensionen
+\begin{itemize}
+\item limitiert zu linearen Embeddings\cite{ye}
 \end{itemize}
 %\pause
-\item Idee / Lösungsansatz 
+\item Spectral clustering
 \begin{itemize}
-%\pause
-\item Feature/Dimension Reduktion
-%\pause
-\item in Abhängigkeit der Clustere
+\item Quadratische oder Super-quadratische Komplexität
 \end{itemize}
 \end{itemize}
+\item Idee
+\begin{itemize}
+\item Neuronalesnetzwerk zum reduzieren der Dimensionen
+\begin{itemize}
+\item nicht lineares mapping
+\end{itemize}
+\item Clustern der reduzierten Daten
+\begin{itemize}
+\item einfaches Clustering möglich, da Dimensionen reduziert
+\end{itemize}
+\item Verbessern des NN und der Cluster durch Backpropagation
+\end{itemize}
+\end{itemize}
+
 \note{viele Daten Punkte viele Distanzen zu berechnen
 schwierig zu visualisieren ohne die Dimensionen zu reduzieren
 Komplexität von Kmeans die exponentiell ansteigt}
 \end{frame}
 
 \section{Einleitung zu Neuronalen Netzen}
+\begin{frame}[t]{Einleitung zu Neuronalen Netzen}\vspace{70pt}
+\begin{figure}
+\center
+\Huge{Neuronale Netze}
+\end{figure}
+\end{frame}
 \subsection{Idee}
 \begin{frame}[t]{Einleitung zu Neuronalen Netzen}\vspace{4pt}
 \begin{center}
@@ -185,21 +205,12 @@ Backpropagation mit Gradient descent
 
 \section{Autoencoders}
 \subsection{Idee}
-\begin{frame}[t]{Autoencoders}\vspace{4pt}
+\begin{frame}[t]{Autoencoders}\vspace{70pt}
 \begin{center}
-\Huge{\begin{itemize}
- \item[] Idee
- \begin{itemize}
- 	\LARGE\item[-] Der Input ist der Output
-	\LARGE\item[-] Engpass in der Mitte
- \end{itemize}
+\Huge{Autoencoder}
+\end{center}
 \note{Ein Autoencoder ist ein feedforward Neural network, was versucht den input zu Kopieren.
 Das hört sich im ersten Moment nutzlos an, hat aber doch ein paar Anwendungsmöglichkeiten. Dazu gehört z.B Denosing oder Reduktion des Features Spaces}
-\end{itemize}}
-\end{center}
-
-
-
 \end{frame}
 
 \subsection{Aufbau}
@@ -247,13 +258,46 @@ Das hört sich im ersten Moment nutzlos an, hat aber doch ein paar Anwendungsmö
 \end{itemize}
 }
 \end{frame}
+\section{Unsupervised Deep Embedding for Clustering Analysis}
+\begin{frame}[t]{Unsupervised Deep Embedding for Clustering Analysis}\vspace{45pt}
+\begin{figure}
+\center
+\Huge{DEC}
+\\
+\vspace{10pt}
+\Large{Unsupervised Deep Embedding for Clustering Analysis}
 
-\section[]{Stecked Autoencoders}
-	\subsection{Idee}
-	\subsection{Aufbau}
+\note{
+- Besteht aus 2 teilen\\
+-- embedding\\
+--- Stacked Autoencoders\\
+-- clustering\\
+--- Clustern der embddedten Daten 
+--- Embeddings verbessern so wie die Cluster anpassen\\}
+\end{figure}
+
+\end{frame}
+\subsection{Stecked Autoencoders}
 \begin{frame}[t]{Stacked Autoencoders}\vspace{4pt}
-Idee
-Aufbau
+\begin{figure}
+\center
+\begin{tikzpicture}
+\node at (0, 0)[rotate=90](input){Input};
+\node at (1,0) [rectangle,minimum width = 6cm, minimum height = 1cm,rotate=90, draw] (dropout) {Dropout};
+\node at (3,0) [rectangle,minimum width = 6cm, minimum height = 1cm,rotate=90, draw] (encoder) {Encoder};
+\node at (5,0) [rectangle,minimum width = 5cm, minimum height = 1cm,rotate=90, draw] (bottleneck) {Bottleneck};
+\node at (7,0) [rectangle,minimum width = 5cm, minimum height = 1cm,rotate=90, draw] (dropout2) {Dropout};
+\node at (9,0) [rectangle, minimum width = 6cm, minimum height = 1cm, rotate=90, draw] (decoder) {Decoder};
+\node at (10, 0)[rotate=90](output){Output};         
+\draw (input)[-stealth] -- (dropout);
+\draw (dropout)[-stealth] -- (encoder);
+\draw (encoder)[-stealth] -- (bottleneck);
+\draw (bottleneck)[-stealth] -- (dropout2);
+\draw (dropout2)[-stealth] -- (decoder);
+\draw (decoder)[-stealth] -- (output);
+    \end{tikzpicture}
+    \caption{Autoencoder mit Dropout}
+\end{figure}
 \note{
 Stacked Autoincoders ist genau das was der name Sagt.\\
 mehrere Autoencoder hintereinander.\\
@@ -265,22 +309,117 @@ Besonderheit man trainiert die folgenden Autoencoder mit dem Output des vorigen 
 }
 \end{frame}
 
+\begin{frame}[t]{Stacked Autoencoders}\vspace{4pt}
+\begin{figure}
+\center
+\begin{tikzpicture}
+		\node at (0, 0)[](input){Input};
+         \node at (2,0) [rectangle,minimum width = 6cm, minimum height = 1cm,rotate=90, draw] (c100) {Encoder};
+        \node at (4,0) [rectangle,minimum width = 5cm, minimum height = 1cm,rotate=90, draw] (v100) {Bottleneck};
+       
+        \draw (c100)[-stealth] -- (v100);
+        \draw (v100)[-stealth] -- (v200);
+        \draw (input)[-stealth] -- (c100);
+    \end{tikzpicture}
+    \caption{Encoder ohne Dropout}
+\end{figure}
+\note{
+Encoder teil ohne noise/dropout und ohne dem decoder\\
+}
+\end{frame}
+
+\begin{frame}[t]{Stacked Autoencoders}\vspace{35pt}
+\begin{figure}
+\center
+\begin{tikzpicture}
+\node at (0.5, 0)[rotate=90](input){Input};
+\node at (1.5,0) [rectangle,minimum width = 4cm, minimum height = 0.4cm,rotate=90, draw] (encoder) {Encoder};
+\node at (2.5,0) [rectangle,minimum width = 3cm, minimum height = 0.4cm,rotate=90, draw] (bottleneck) {Bottleneck};
+\node at (3.5,0) [rectangle,minimum width = 3cm, minimum height = 0.4cm,rotate=90, draw] (dropout0) {Dropout};
+\node at (4.5,0) [rectangle,minimum width = 3cm, minimum height = 0.4cm,rotate=90, draw] (encoder2) {Encoder};
+\node at (5.5,0) [rectangle,minimum width = 2cm, minimum height = 0.4cm,rotate=90, draw] (dropout) {Bottleneck};
+\node at (6.5,0) [rectangle,minimum width = 2cm, minimum height = 0.4cm,rotate=90, draw] (bottlenack2) {Dropout};
+\node at (7.5,0) [rectangle, minimum width = 4cm, minimum height = 0.4cm, rotate=90, draw] (decoder) {Decoder};
+\node at (8.5, 0)[rotate=90](output){Output};         
+\draw (input)[-stealth] -- (encoder);
+\draw (encoder)[-stealth] -- (bottleneck);
+\draw (bottleneck)[-stealth] -- (dropout0);
+\draw (dropout0)[-stealth] -- (encoder2);
+\draw (encoder2)[-stealth] -- (dropout);
+\draw (dropout)[-stealth] -- (bottlenack2);
+\draw (bottlenack2)[-stealth] -- (decoder);
+\draw (decoder)[-stealth] -- (output);
+\node at (6,0) [rectangle, minimum width = 4.5cm, minimum height = 6cm, rotate=90,color=red, draw] (umrandung) {};
+    \end{tikzpicture}
+    \caption{Stacked Autoencoder}
+\end{figure}
+\note{
+Aktivierungsfunktion relu außer im letzten Decoder und Encoder Layer sigmoid\\
+für die zero-mean imageas\\
+Zero-mean images -> durchschnitt pro pixel über alle bilder im Datensatzt\\
+das bild wird dann von jedem bild abgezogen und damit liegt der durschnitt bei den Bilder bei null deswegen zero mean images.\\
+loss = least-square\\
+nach dem Training des Autoencoders wird der Encoder als nicht lineares mapping für die daten genutzt die man Clustern möchte
+}
+\end{frame}
+
+\section{Deep embedded clustering}
+\begin{frame}[t]{Deep embedded clustering}\vspace{70pt}
+\begin{figure}
+\center
+\Huge{Deep embedded clustering}
+\end{figure}
+\end{frame}
+
+\subsection{Kullback Leibler Divergenz}
+\begin{frame}[t]{KL Divergenz}\vspace{4pt}
+
+\end{frame}
+
+\begin{frame}[t]{Soft Assignment}\vspace{4pt}
+
+\end{frame}
+
+\begin{frame}[t]{Minimierung von Kl Divergenz}\vspace{4pt}
+
+\end{frame}
+
+\begin{frame}[t]{Optimierung}\vspace{4pt}
+
+\end{frame}
+
 \begin{frame}[t]{Vorherige Arbeiten}\vspace{4pt}
 andere Clustering algorithmen ?
 andere Dimensions-Reduktions-algorithmen
 \end{frame}
 
-\begin{frame}[t]{Von wem ist das Paper}\vspace{4pt}
-macvht hier kein sinn kommt am anfang
+\begin{frame}[t]{Von wem ist das Paper}\vspace{30pt}
+
+\begin{figure}
+\center
+\Large{Junyuan Xie}\\
+University of Washington\\
+\vspace{8pt}
+\Large{Ross Girshick}\\
+Facebook AI Research (FAIR)\\
+\vspace{8pt}
+\Large{Ali Farhadi}\\
+University of Washington\\
+\end{figure}
+
 \end{frame}
 
 
-\section[]{}
+\section{Referenzen}
 \begin{frame}[t]{Referenzen}\vspace{4pt}
 \begin{thebibliography}{10}
-\bibitem{Kmeans}
-\alert{k-means clustering}
-\newblock  {\url{https://en.wikipedia.org/wiki/K-means_clustering\#Complexity}}
+\bibitem{steinbach}
+Steinbach, Michael, Ertöz, Levent, and Kumar, Vipin.
+The challenges of clustering high dimensional data. In
+\textit{New Directions in Statistical Physics,} pp. 273–309. Springer, 2004.
+
+\bibitem{ye}
+Ye, Jieping, Zhao, Zheng, and Wu, Mingrui. Discriminative k-means for clustering. In \textit{NIPS}, 2008.
 \end{thebibliography}
 
 \end{frame}
