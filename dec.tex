@@ -268,8 +268,10 @@ Das hört sich im ersten Moment nutzlos an, hat aber doch ein paar Anwendungsmö
 \Large{Unsupervised Deep Embedding for Clustering Analysis}
 
 \note{
+DEC has two phases: (1) parameter initialization with a deep autoencode\\
+parameter optimization (i.e., clustering), where we iterate between computing an auxiliary target distribution and minimizing the Kullback–Leibler (KL) divergence to it.\\
 - Besteht aus 2 teilen\\
--- embedding\\
+-- embedding mapping in den kleineren raum Z\\
 --- Stacked Autoencoders\\
 -- clustering\\
 --- Clustern der embddedten Daten 
@@ -371,21 +373,175 @@ nach dem Training des Autoencoders wird der Encoder als nicht lineares mapping f
 \end{figure}
 \end{frame}
 
-\subsection{Kullback Leibler Divergenz}
-\begin{frame}[t]{KL Divergenz}\vspace{4pt}
-
+\begin{frame}[t]{Deep embedded clustering}
+\begin{figure}
+\center
+\begin{tikzpicture}
+\node [] (input) {Input};
+\node [rectangle,minimum width = 0.5cm, minimum height = 0.5cm, draw,below of=input] (encoder) {Encoder};
+\node [below of=encoder] (z) {Z};
+\node [below of=encoder,xshift=3cm](empty){};
+\node [rectangle,minimum width = 0.5cm, minimum height = 0.5cm, draw,below of=z] (kmeans)
+{Kmeans};
+\node [below of=kmeans] (mu) {$\mu$}; 
+\node [rectangle,minimum width = 0.5cm, minimum height = 0.5cm, draw,below of=kmeans,xshift=3cm] (soft)
+{Soft Assignment};
+\node [below of=soft] (q) {$q$};
+\node [rectangle,minimum width = 0.5cm, minimum height = 0.5cm, draw,below of=mu] (aux)
+{Hilfsverteilung};
+\node [below of=aux] (p) {$p$};
+\node [rectangle,minimum width = 0.5cm, minimum height = 0.5cm, draw,below of=q] (loss)
+{Loss};
+\node [below of=q,xshift=3cm] (l) {L};
+\draw (input)[-stealth] -- (encoder);
+\draw (encoder)[-stealth] -- (z);
+\draw (z)[-stealth] -- (kmeans);
+\draw (kmeans)[-stealth] -- (mu);
+\draw (mu)[-stealth] -- (soft);
+\draw (soft)[-stealth] -- (q);
+\draw (q)[-stealth] -- (loss);
+\draw (q)[-stealth] -- (aux);
+\draw (aux)[-stealth] -- (p);
+\draw (p)[-stealth] -- (loss);
+\draw (z) -- (empty.center);
+\draw (empty.center)[-stealth] -- (soft);
+\draw (loss)[-stealth] -- (l);
+\end{tikzpicture}
+\caption{Abstrakter Aufbau des Clustering Layers}
+\end{figure}
+\note{
+- input daten durch sae werden auf kleinen feature raum Z abgebildet\\
+- clustern der Daten Z es entstehen die Cluster Schwerpunkte $\mu$\\
+- soft assignments zwischen $\mu$ und z, wird zu q\\
+- Hilfsverteilung aus q, wird zu p\\
+- Loss zwischen q und p\\
+}
 \end{frame}
 
-\begin{frame}[t]{Soft Assignment}\vspace{4pt}
-
+\subsection{KMeans}
+\begin{frame}[t]{KMeans}\vspace{20pt}
+\Huge\begin{figure}
+\center
+\begin{tikzpicture}
+\node at (0,0) (z) {Z};
+\node at (0,-2) [rectangle,minimum width = 0.5cm, minimum height = 0.5cm, draw] (kmeans){Kmeans};
+\node at (0,-4) (mu) {$\mu$}; 
+\draw (z)[-stealth] -- (kmeans);
+\draw (kmeans)[-stealth] -- (mu);
+\end{tikzpicture}
+\end{figure}
+\note{
+Clustern der Daten aus dem SAE\\
+- Cluster Schwerpunkte für Soft Assignment\\
+- eigentliche Cluster die man haben will\\ 
+}
 \end{frame}
 
-\begin{frame}[t]{Minimierung von Kl Divergenz}\vspace{4pt}
-
+\subsection{Soft Assignments}
+\begin{frame}[t]{Soft Assignments}\vspace{4pt}
+\begin{figure}
+\center
+\begin{tikzpicture}
+\node at (0,0) (mu) {$\mu$}; 
+\node [right of=mu] (z) {Z};
+\node [rectangle,minimum width = 0.5cm, minimum height = 0.5cm, draw,below of=mu,xshift=0.5cm] (soft) {Soft Assignment};
+\node [below of=soft] (q) {q};
+\draw (z)[-stealth] -- (soft);
+\draw (mu)[-stealth] -- (soft);
+\draw (soft)[-stealth] -- (q);
+\end{tikzpicture}
+\end{figure}
+\begin{figure}
+\center
+\Huge $q_{ij}=\frac{(1+||z_i-\mu_j||^2/\alpha)^{-\frac{\alpha+1}{2}}}{\sum_{j'}(1+||z_i-\mu_j'||^2/\alpha)^{-\frac{\alpha+1}{2}}}$
+\end{figure}
+\note{
+Student t-Verteilung um die Ähnlichkeit zwischen $z_i$ und $\mu_j$ zu messen\\
+Freiheitsgrad ist 1\cite{maaten}\\
+$q_{ij}$ ist die Wahrscheinlichkeit die $z_i$  dem Cluster $q_j$ zuzuordnen\\
+ 
+}
 \end{frame}
 
-\begin{frame}[t]{Optimierung}\vspace{4pt}
+\subsection{Hilfsverteilung}
+\begin{frame}[t]{Hilfsverteilung}\vspace{4pt}
+\begin{figure}
+\center
+\begin{tikzpicture}
+\node at (0,0) (q) {q};
+\node [rectangle, draw,below of=q] (aux) {Hilfsverteilung};
+\node [below of=aux] (p) {p};
+\draw (q)[-stealth] -- (aux);
+\draw (aux)[-stealth] -- (p);
+\end{tikzpicture}
+\end{figure}
+\begin{figure}
+\center
+\Huge $p_{ij}=\frac{q_{ij}^2/f_j}{\sum_{j'}q_{ij'}^2/f_{j'}}$\\
+\vspace{10pt}
+$f_j=\sum_j q_{ij}$\\
+\end{figure}
+\note{
+Eigenschaften der Hilfsverteilung\\
+- Prognosen Verstärken\\
+- mehr Gewicht auf genaue Datenpunkte\\
+- loss Verteilung von jedem Cluster Schwerpunkt normalisieren um zu verhindern das der versteckte Merkmals Bereich nicht verzehrt wird.\\
+--- man will das letzte Encoder Layer schützen. \\
+$f_j$ Soft-Cluster-Frequenzen\\
+Erklärung wie die Eigenschaft erreicht werden im Fazit.\\ 
+}
+\end{frame}
 
+\subsection{Loss}
+\begin{frame}[t]{Loss}\vspace{4pt}
+\begin{figure}
+\center
+\Large Kullback-Leibler-Divergenz
+\end{figure}
+\begin{figure}
+\center
+\begin{tikzpicture}
+\node at (0,0) (q) {q};
+\node [right of=q] (p) {p};
+\node [rectangle, draw,below of=q,xshift=0.5cm] (loss) {Loss};
+\node [below of=loss] (L) {L};
+\draw (q)[-stealth] -- (loss);
+\draw (p)[-stealth] -- (loss);
+\draw (loss)[-stealth] -- (L);
+\end{tikzpicture}
+\end{figure}
+\begin{figure}
+\center
+\Huge $L=KL(P||Q)\sum_i\sum_j p_{ij}\log\frac{p_{ij}}{q_{ij}}$\\
+\end{figure}
+\note{
+Kullback-Leibler-Divergenz oder Kullback-Leibler-Abstand\\
+- maß für Unterschiedlichkeit zweier Wahrscheinlichkeitsverteilungen\\
+- hier als loss funktionen\\
+- unterschied zwischen q und p\\
+- der unterschied wird versucht zu minimieren.\\
+}
+\end{frame}
+
+\subsection{Optimierung}
+\begin{frame}[t]{Optimierung}\vspace{30pt}
+\begin{figure}
+\center
+\Large Stochastic Gradient Descent
+\end{figure}
+\vspace{20pt}
+\begin{figure}
+\Large
+\center
+$\frac{\partial L}{\partial z_i} = \frac{\alpha+1}{\alpha}\sum_j(1+\frac{||z_i - \mu_j||^2}{\alpha})^{-1}\times (p_{ij}-q_{ij})(z_i-\mu_j)$\\
+\vspace{20pt}
+$\frac{\partial L}{\partial \mu_j} = -\frac{\alpha+1}{\alpha}\sum_i(1+\frac{||z_i - \mu_j||^2}{\alpha})^{-1}\times (p_{ij}-q_{ij})(z_i-\mu_j)$\\
+\end{figure}
+\note{
+Gradient von L wird berechnet in Abhängigkeit von $q_i$ und $\mu_j$\\
+$\frac{\partial L}{\partial z_i}$ wird dann für backpropagation genutzt.\\
+wird Optimiert bis eine bestimmter Prozentsatz an Cluster punkten nicht mehr das Cluster wechselt, zwischen zwei fortlaufenden Iterationen.\\
+}
 \end{frame}
 
 \begin{frame}[t]{Vorherige Arbeiten}\vspace{4pt}
@@ -420,8 +576,10 @@ The challenges of clustering high dimensional data. In
 
 \bibitem{ye}
 Ye, Jieping, Zhao, Zheng, and Wu, Mingrui. Discriminative k-means for clustering. In \textit{NIPS}, 2008.
-\end{thebibliography}
 
+\bibitem{maaten}
+van der Maaten, Laurens. Learning a parametric embedding by preserving local structure. In \textit{International Conference on Artificial Intelligence and Statistics}, 2009.
+\end{thebibliography}
 \end{frame}
 
 \end{document}
