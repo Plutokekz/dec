@@ -31,7 +31,7 @@
 
 
 \begin{frame}[plain]{Roadmap}
-\tableofcontents
+\tableofcontents[hideallsubsections]
 \end{frame}
 
 \section{Clustern von Daten mit hohen Dimensionen}
@@ -361,7 +361,11 @@ für die zero-mean imageas\\
 Zero-mean images -> durchschnitt pro pixel über alle bilder im Datensatzt\\
 das bild wird dann von jedem bild abgezogen und damit liegt der durschnitt bei den Bilder bei null deswegen zero mean images.\\
 loss = least-square\\
-nach dem Training des Autoencoders wird der Encoder als nicht lineares mapping für die daten genutzt die man Clustern möchte
+nach dem Training des Autoencoders wird der Encoder als nicht lineares mapping für die daten genutzt die man Clustern möchte\\
+Netzwerk Aufbau input-500-500-2000-10\\
+50000 epochs pro layer\\
+100000 ganzes Netz ohne dropout epochs fine tuning\\
+256 batchsize\\
 }
 \end{frame}
 
@@ -544,13 +548,177 @@ wird Optimiert bis eine bestimmter Prozentsatz an Cluster punkten nicht mehr das
 }
 \end{frame}
 
-\begin{frame}[t]{Vorherige Arbeiten}\vspace{4pt}
-andere Clustering algorithmen ?
-andere Dimensions-Reduktions-algorithmen
+\begin{frame}[t]{Experimente}\vspace{50pt}
+\begin{figure}
+\center
+\Huge
+MNIST
+\end{figure}
+\note{
+mnist\\
+- 70k Handgeschriebene Zahlen\\
+- von 0 - 9\\
+- 28*28 pixel\\
+}
+\end{frame}
+
+\begin{frame}[t]{Experimente}\vspace{50pt}
+\begin{figure}
+\center
+\Huge
+STL-10
+\end{figure}
+\note{STL-10\\
+- 10 Klassen\\
+- 1300 Bilder pro Klasse\\
+zusätzlich:\\
+- 100000 Unbeschriftete Bilder\\
+- haben beide benutzt\\
+- aber gepreprocessed\\
+- HOG features mit einem 8*8 filter\\
+HOG:\\
+- Histogram of Oriented Gradients\\
+- Ausrichtung der Kanten und des Gradienten in 8*8 pixel blöcken\\}
+\end{frame}
+
+\begin{frame}[t]{Experimente}\vspace{50pt}
+\begin{figure}
+\center
+\Huge
+REUTERS
+\end{figure}
+\note{
+Reuters:\\
+- 810000 English Nachrichtenberichte\\
+- in Kategorie Bäume eingeteilt\\
+- 4 Haupt Kategorien (corporate/industrial, government/social, markets, economics)\\
+- alle die mehr Haupt Kategorien hatten find raus geflogen\\
+- 685071 übrig\\
+- tf-idf von den 2000 häufigsten Wort Stämmen\\
+- Term Frequency-Inverse Document Frequency\\
+- wie wichtig ein Wort in einem Satz von einem Text ist.\\}
+\end{frame}
+
+\begin{frame}[t]{Bewertungsmetrik}\vspace{60pt}
+\begin{figure}
+\center
+\Huge
+$ACC=\max_m\frac{\sum^n_{i=1} 1\{l_i=m(c_i)\}}{n}$
+\note{
+- $l_i$ das wahre label\\
+- $c_i$ Cluster Zuordnung\\
+- $m$ alle one to one Zuordnungen zwischen Clustern und Labels\\
+Findet das beste mapping zwischen Cluster und Label
+}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]{Ergebnisse}\vspace{40pt}
+\begin{figure}
+\begin{tabular}{l|c|c|c|c}
+Methode & MNIST & STL-HOG & REUTERS-10K & REUTERS\\
+\hline\hline
+k-means & 53.49\% & 28.39\% & 52.42\% & 53.29\%\\
+\hline
+LDMGI & 84.09\% & 33.08\% & 43.84\% & N/A\\
+\hline
+SEC & 80.37\% & 30.75\% & 60.08\% & N/A\\
+\hline
+DEC w/o & 79.82\% & 34.06\% & 70.05\% & 69.62\%\\
+\hline
+\textbf{DEC} & \textbf{84.30\%} & \textbf{35.90\%} & \textbf{72.17\%} & \textbf{75.63\%}\\
+\end{tabular}
+\end{figure}
+\note{
+erklären der anderen Algorithmen und deren Start Bedingungen \\
+DEC can process the
+entire REUTERS dataset in half an hour with GPU acceler-
+ation while the second best algorithms, LDGMI and SEC,
+would need months of computation time and terabytes of
+memory. We, indeed, could not run these methods on the
+full REUTERS dataset and report N/A in Table 2 
+}
+\end{frame}
+
+\begin{frame}[t]{Clusters}\vspace{20pt}
+\begin{columns}
+% Column 1
+\begin{column}{0.6\textwidth}
+    \begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{mnist_cluster.png}
+    \caption{MNIST}
+    \end{figure}
+\end{column}
+% Column 2    
+\begin{column}{0.6\textwidth}
+    \begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{stl-10_cluster.png}
+    \caption{STL-10}
+    \end{figure}
+\end{column}
+\end{columns}
+%\caption{Jede Zeile hat die 10 besten Cluster}
+\note{
+Each row contains the top 10 scoring elements from one cluster.\\
+In Fig. 3 we show 10 top scoring images from each clus-
+ter in MNIST and STL. Each row corresponds to a cluster
+and images are sorted from left to right based on their dis-
+tance to the cluster center. We observe that for MNIST,
+DEC’s cluster assignment corresponds to natural clusters
+very well, with the exception of confusing 4 and 9, while
+for STL, DEC is mostly correct with airplanes, trucks and
+cars, but spends part of its attention on poses instead of
+categories when it comes to animal classes.
+}
+\end{frame}
+
+\begin{frame}[t]{Autoencoder Features}\vspace{40pt}
+\begin{figure}
+\center
+\begin{tabular}{l|c|c|c|c}
+Methode & MNIST & STL-HOG & REUTERS-10K & REUTERS\\
+\hline\hline
+AE+kmeans & 81.84\% & 33.92\% & 66.59\% & 71.97\%\\
+\hline
+AE+LDMGI & 83.98\% & 32.04\% & 42.92\% & N/A\\
+\hline
+AE+SEC & 81.56\% & 32.29\% & 61.86\% & N/A\\
+\hline
+\textbf{DEC} & \textbf{84.30\%} & \textbf{35.90\%} & \textbf{72.17\%} & \textbf{75.63\%}\\
+\end{tabular}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]{Gradient Visualisierung}\vspace{4pt}
+\begin{figure}
+\center
+\includegraphics[scale=0.33]{gradient_vs_qij.png}
+\caption{Cluster Soft Assignment vs Loss L}
+\end{figure}
+\note{
+Richtigkeit von Hilfsverteilung P und\\
+Punkte die nähere am Cluster Mittelpunkt sind haben mehr Einfluss auf den Gradienten.\\}
+\end{frame}
+
+\begin{frame}[t]{Cluster Überzeit}\vspace{4pt}
+\begin{figure}
+\center
+\includegraphics[scale=0.35]{ClusterOverTime_tsne_plot.png}
+%\caption{•}
+\end{figure}
+\note{
+verbesserung der Cluster über Zeit ??? 
+
+}
+\end{frame}
+
+\begin{frame}[t]{Fazit}\vspace{4pt}
+?
 \end{frame}
 
 \begin{frame}[t]{Von wem ist das Paper}\vspace{30pt}
-
 \begin{figure}
 \center
 \Large{Junyuan Xie}\\
@@ -562,7 +730,6 @@ Facebook AI Research (FAIR)\\
 \Large{Ali Farhadi}\\
 University of Washington\\
 \end{figure}
-
 \end{frame}
 
 
