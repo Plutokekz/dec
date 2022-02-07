@@ -631,12 +631,18 @@ DEC w/o & 79.82\% & 34.06\% & 70.05\% & 69.62\%\\
 \end{figure}
 \note{
 erklären der anderen Algorithmen und deren Start Bedingungen \\
-DEC can process the
-entire REUTERS dataset in half an hour with GPU acceler-
-ation while the second best algorithms, LDGMI and SEC,
-would need months of computation time and terabytes of
-memory. We, indeed, could not run these methods on the
-full REUTERS dataset and report N/A in Table 2 
+Kmeans:\\
+20 restart bestes Ergebnis wird genommen\\
+LDMGI:\\
+Image Clustering using Local Discriminant Models and Global Integration\\
+Gleiche Parameter wie in deren Paper\\
+SEC:\\
+Spectral Clustering mit Linearen Embeddings\\
+Gleiche Parameter wie in deren Paper\\
+1 Hyperparameter für jeden Algorithmus mit 9 Auswahlmöglichkeiten\\
+das beste Ergebnis wird genommen.\\
+DEC wird $\lambda$ variiert, Kontrolliert  den anealing speed.\\
+LDMGI und SEC konnten REUTERS nicht verarbeiten, weil zu viel RAM benötigt wurde.\\
 }
 \end{frame}
 
@@ -661,16 +667,14 @@ full REUTERS dataset and report N/A in Table 2
 \end{columns}
 %\caption{Jede Zeile hat die 10 besten Cluster}
 \note{
-Each row contains the top 10 scoring elements from one cluster.\\
-In Fig. 3 we show 10 top scoring images from each clus-
-ter in MNIST and STL. Each row corresponds to a cluster
-and images are sorted from left to right based on their dis-
-tance to the cluster center. We observe that for MNIST,
-DEC’s cluster assignment corresponds to natural clusters
-very well, with the exception of confusing 4 and 9, while
-for STL, DEC is mostly correct with airplanes, trucks and
-cars, but spends part of its attention on poses instead of
-categories when it comes to animal classes.
+reihe:\\
+10 besten cluster Ergebnisse von einem Cluster\\
+mnist:\\
+4 und 9 landen im gleichen Cluster da sie so ähnlich aussehen.\\
+stl:\\
+meistens richtig: Flugzeuge, LKWs, Autos\\
+Tiere wurden an Tiere Pose geclusterd und nicht der Art.\\
+Liegt wahrscheinlich daran das sie HOG benutzt haben um features zu extrahieren\\
 }
 \end{frame}
 
@@ -689,6 +693,12 @@ AE+SEC & 81.56\% & 32.29\% & 61.86\% & N/A\\
 \textbf{DEC} & \textbf{84.30\%} & \textbf{35.90\%} & \textbf{72.17\%} & \textbf{75.63\%}\\
 \end{tabular}
 \end{figure}
+\note{
+Alles ist besser mit einen Autoencoder.\\
+keine angaben zum Autoencoder\\
+kein stacked autoencoeder\\
+ist dec wirklich soooo viel besser ??\\
+}
 \end{frame}
 
 \begin{frame}[t]{Gradient Visualisierung}\vspace{4pt}
@@ -699,7 +709,9 @@ AE+SEC & 81.56\% & 32.29\% & 61.86\% & N/A\\
 \end{figure}
 \note{
 Richtigkeit von Hilfsverteilung P und\\
-Punkte die nähere am Cluster Mittelpunkt sind haben mehr Einfluss auf den Gradienten.\\}
+Punkte die nähere am Cluster Mittelpunkt sind haben mehr Einfluss auf den Gradienten.\\
+punkte die weiter weg sind, weniger Einfluss, und 5 wird zur 8.\\
+}
 \end{frame}
 
 \begin{frame}[t]{Cluster Überzeit}\vspace{4pt}
@@ -709,13 +721,27 @@ Punkte die nähere am Cluster Mittelpunkt sind haben mehr Einfluss auf den Gradi
 %\caption{•}
 \end{figure}
 \note{
-verbesserung der Cluster über Zeit ??? 
-
+Man kann beobachten das die Cluster sich über zeit verbessern.\\
+genauigkeit geht hoch.\\
+nach wenigen Epochs sichtbare Verbesserung.\\
+30 Epochs sind nicht viele\\
+spricht für DEC.\\
 }
 \end{frame}
 
-\begin{frame}[t]{Fazit}\vspace{4pt}
-?
+\begin{frame}[t]{Fazit}\vspace{30pt}
+\begin{figure}
+\center
+\Huge 
+Gut\\
+aber\\
+Aufwendig\\
+\end{figure}
+\note{
+sehr aufwendig um etwas zu Clustern, wegen SAE\\
+Weiterentwicklung von Kmeans, da eigentlich nur SAE weiter verbessert wird.\\
+eigentliches Clustering Kmeans.\\
+}
 \end{frame}
 
 \begin{frame}[t]{Von wem ist das Paper}\vspace{30pt}
