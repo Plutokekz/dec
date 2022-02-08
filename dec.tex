@@ -1,6 +1,6 @@
 \documentclass{beamer}
 %\usepackage{pgfpages}
-\setbeameroption{show notes on second screen}
+%\setbeameroption{show notes on second screen}
 
 \usepackage{hyperref}
 \usepackage{xcolor}
@@ -35,7 +35,11 @@
 \end{frame}
 
 \section{Clustern von Daten mit hohen Dimensionen}
-\begin{frame}[t]{Clustern von Daten mit hohen Dimensionen}\vspace{4pt}
+\subsection{Probleme}
+\begin{frame}[t]{Clustern von Daten mit hohen Dimensionen}\vspace{40pt}
+\begin{figure}
+\center
+\LARGE
 \begin{itemize}
 \item Problem
 \begin{itemize}
@@ -57,6 +61,20 @@
 \item Quadratische oder Super-quadratische Komplexität
 \end{itemize}
 \end{itemize}
+\end{itemize}
+\end{figure}
+
+\note{viele Daten Punkte viele Distanzen zu berechnen
+schwierig zu visualisieren ohne die Dimensionen zu reduzieren
+Komplexität von Kmeans die exponentiell ansteigt}
+\end{frame}
+
+\subsection{Idee}
+\begin{frame}[t]{Clustern von Daten mit hohen Dimensionen}\vspace{40pt}
+\begin{figure}
+\center
+\LARGE{
+\begin{itemize}
 \item Idee
 \begin{itemize}
 \item Neuronalesnetzwerk zum reduzieren der Dimensionen
@@ -70,10 +88,9 @@
 \item Verbessern des NN und der Cluster durch Backpropagation
 \end{itemize}
 \end{itemize}
+}
+\end{figure}
 
-\note{viele Daten Punkte viele Distanzen zu berechnen
-schwierig zu visualisieren ohne die Dimensionen zu reduzieren
-Komplexität von Kmeans die exponentiell ansteigt}
 \end{frame}
 
 \section{Einleitung zu Neuronalen Netzen}
@@ -84,23 +101,23 @@ Komplexität von Kmeans die exponentiell ansteigt}
 \end{figure}
 \end{frame}
 \subsection{Idee}
-\begin{frame}[t]{Einleitung zu Neuronalen Netzen}\vspace{4pt}
+\begin{frame}[t]{Einleitung zu Neuronalen Netzen}\vspace{30pt}
 \begin{center}
 \begin{itemize}
-\large\item[] Nicht-lineare statistische Modelle zur Informationsverarbeitung
-\large\item[] Informationsverarbeitung umfasst hierbei unter anderem
+\large\item Nicht-lineare statistische Modelle zur Informationsverarbeitung
+\large\item Informationsverarbeitung umfasst hierbei unter anderem
 \begin{itemize}
-\item[] Klassifikation
-\item[] Prognosenerstellung
+\item Klassifikation
+\item Prognosenerstellung
 \end{itemize}
-\large\item[] Units der Neuronalen Netze angelehnt an Neuronen
+\large\item Units der Neuronalen Netze angelehnt an Neuronen
 \begin{itemize}
-\item[] Inputs zusammenfassen
-\item[] Mit Schwellenwert vergleichen bzw. aktivieren
+\item Inputs zusammenfassen
+\item Mit Schwellenwert vergleichen bzw. aktivieren
 \end{itemize}
-\large\item[] Verbindungen zwischen Units angelehnt an Synapsen
+\large\item Verbindungen zwischen Units angelehnt an Synapsen
 \begin{itemize}
-\item[] Gewichtung mit verstärkender oder schwächender Wirkung
+\item Gewichtung mit verstärkender oder schwächender Wirkung
 \end{itemize}
 \end{itemize}
 \end{center}
@@ -214,15 +231,15 @@ Das hört sich im ersten Moment nutzlos an, hat aber doch ein paar Anwendungsmö
 \end{frame}
 
 \subsection{Aufbau}
-\begin{frame}[t]{Autoencoders}\vspace{4pt}
+\begin{frame}[t]{Autoencoders}%\vspace{4pt}
 \begin{figure}
 \center
 \begin{tikzpicture}
 		\node at (0, 0)[](input){Input};
-         \node at (2,0) [rectangle,minimum width = 6cm, minimum height = 1cm,rotate=90, draw] (c100) {Encoder};
-        \node at (4,0) [rectangle,minimum width = 3cm, minimum height = 1cm,rotate=90, draw] (v100) {Bottleneck};
-                 \node at (6,0) [rectangle, minimum width = 6cm, minimum height = 1cm, rotate=90, draw] (v200) {Decoder};
-        		\node at (8, 0)[](output){Output};         
+         \node at (0,-1.5) [rectangle,minimum width = 6cm, minimum height = 0.8cm, draw] (c100) {Encoder};
+        \node at (0,-3) [rectangle,minimum width = 3cm, minimum height = 0.8cm, draw] (v100) {Bottleneck};
+                 \node at (0,-4.5) [rectangle, minimum width = 6cm, minimum height = 0.8cm, draw] (v200) {Decoder};
+        		\node at (0, -6)[](output){Output};         
         \draw (c100)[-stealth] -- (v100);
         \draw (v100)[-stealth] -- (v200);
         \draw (input)[-stealth] -- (c100);
@@ -280,17 +297,17 @@ parameter optimization (i.e., clustering), where we iterate between computing an
 
 \end{frame}
 \subsection{Stecked Autoencoders}
-\begin{frame}[t]{Stacked Autoencoders}\vspace{4pt}
+\begin{frame}[t]{Stacked Autoencoders}%\vspace{4pt}
 \begin{figure}
 \center
 \begin{tikzpicture}
-\node at (0, 0)[rotate=90](input){Input};
-\node at (1,0) [rectangle,minimum width = 6cm, minimum height = 1cm,rotate=90, draw] (dropout) {Dropout};
-\node at (3,0) [rectangle,minimum width = 6cm, minimum height = 1cm,rotate=90, draw] (encoder) {Encoder};
-\node at (5,0) [rectangle,minimum width = 5cm, minimum height = 1cm,rotate=90, draw] (bottleneck) {Bottleneck};
-\node at (7,0) [rectangle,minimum width = 5cm, minimum height = 1cm,rotate=90, draw] (dropout2) {Dropout};
-\node at (9,0) [rectangle, minimum width = 6cm, minimum height = 1cm, rotate=90, draw] (decoder) {Decoder};
-\node at (10, 0)[rotate=90](output){Output};         
+\node at (0, 0)[](input){Input};
+\node at (0,-1) [rectangle,minimum width = 6cm, minimum height = 0.5cm, draw] (dropout) {Dropout};
+\node at (0,-2) [rectangle,minimum width = 6cm, minimum height = 0.5cm, draw] (encoder) {Encoder};
+\node at (0,-3) [rectangle,minimum width = 5cm, minimum height = 0.5cm, draw] (bottleneck) {Bottleneck};
+\node at (0,-4) [rectangle,minimum width = 5cm, minimum height = 0.5cm, draw] (dropout2) {Dropout};
+\node at (0,-5) [rectangle, minimum width = 6cm, minimum height = 0.5cm, draw] (decoder) {Decoder};
+\node at (0, -6)[](output){Output};         
 \draw (input)[-stealth] -- (dropout);
 \draw (dropout)[-stealth] -- (encoder);
 \draw (encoder)[-stealth] -- (bottleneck);
@@ -315,13 +332,14 @@ Besonderheit man trainiert die folgenden Autoencoder mit dem Output des vorigen 
 \begin{figure}
 \center
 \begin{tikzpicture}
-		\node at (0, 0)[](input){Input};
-         \node at (2,0) [rectangle,minimum width = 6cm, minimum height = 1cm,rotate=90, draw] (c100) {Encoder};
-        \node at (4,0) [rectangle,minimum width = 5cm, minimum height = 1cm,rotate=90, draw] (v100) {Bottleneck};
-       
-        \draw (c100)[-stealth] -- (v100);
-        \draw (v100)[-stealth] -- (v200);
-        \draw (input)[-stealth] -- (c100);
+		\node at (0,0)[](input){Input};
+        \node at (0,-2) [rectangle,minimum width = 6cm, minimum height = 1cm, draw] (encoder) {Encoder};
+        \node at (0,-4) [rectangle,minimum width = 5cm, minimum height = 1cm, draw] (bottlenack) {Bottleneck};
+        \node at (0,-6)[](output){};
+        \draw (input)[-stealth] -- (encoder);
+        \draw (encoder)[-stealth] -- (bottlenack);
+        \draw (bottlenack)[-stealth] -- (output);
+        
     \end{tikzpicture}
     \caption{Encoder ohne Dropout}
 \end{figure}
@@ -561,7 +579,8 @@ mnist\\
 - 28*28 pixel\\
 }
 \end{frame}
-
+\section{Ergebnisse}
+\subsection{Datensätze}
 \begin{frame}[t]{Experimente}\vspace{50pt}
 \begin{figure}
 \center
@@ -599,6 +618,7 @@ Reuters:\\
 - wie wichtig ein Wort in einem Satz von einem Text ist.\\}
 \end{frame}
 
+\subsection{Accuracy}
 \begin{frame}[t]{Bewertungsmetrik}\vspace{60pt}
 \begin{figure}
 \center
@@ -613,6 +633,7 @@ Findet das beste mapping zwischen Cluster und Label
 \end{figure}
 \end{frame}
 
+\subsection{Vergleiche}
 \begin{frame}[t]{Ergebnisse}\vspace{40pt}
 \begin{figure}
 \begin{tabular}{l|c|c|c|c}
@@ -646,10 +667,11 @@ LDMGI und SEC konnten REUTERS nicht verarbeiten, weil zu viel RAM benötigt wurd
 }
 \end{frame}
 
+\subsection{Cluster veranschaulicht}
 \begin{frame}[t]{Clusters}\vspace{20pt}
 \begin{columns}
 % Column 1
-\begin{column}{0.6\textwidth}
+\begin{column}{0.55\textwidth}
     \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{mnist_cluster.png}
@@ -657,7 +679,7 @@ LDMGI und SEC konnten REUTERS nicht verarbeiten, weil zu viel RAM benötigt wurd
     \end{figure}
 \end{column}
 % Column 2    
-\begin{column}{0.6\textwidth}
+\begin{column}{0.55\textwidth}
     \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{stl-10_cluster.png}
@@ -678,9 +700,12 @@ Liegt wahrscheinlich daran das sie HOG benutzt haben um features zu extrahieren\
 }
 \end{frame}
 
+\subsection{Vergleiche AE}
 \begin{frame}[t]{Autoencoder Features}\vspace{40pt}
+
 \begin{figure}
 \center
+\scalebox{0.93}{
 \begin{tabular}{l|c|c|c|c}
 Methode & MNIST & STL-HOG & REUTERS-10K & REUTERS\\
 \hline\hline
@@ -692,7 +717,9 @@ AE+SEC & 81.56\% & 32.29\% & 61.86\% & N/A\\
 \hline
 \textbf{DEC} & \textbf{84.30\%} & \textbf{35.90\%} & \textbf{72.17\%} & \textbf{75.63\%}\\
 \end{tabular}
+}
 \end{figure}
+
 \note{
 Alles ist besser mit einen Autoencoder.\\
 keine angaben zum Autoencoder\\
@@ -701,6 +728,7 @@ ist dec wirklich soooo viel besser ??\\
 }
 \end{frame}
 
+\subsection{Gradient Veranschaulichung}
 \begin{frame}[t]{Gradient Visualisierung}\vspace{4pt}
 \begin{figure}
 \center
@@ -714,6 +742,7 @@ punkte die weiter weg sind, weniger Einfluss, und 5 wird zur 8.\\
 }
 \end{frame}
 
+\subsection{Cluster Über Zeit}
 \begin{frame}[t]{Cluster Überzeit}\vspace{4pt}
 \begin{figure}
 \center
@@ -729,6 +758,7 @@ spricht für DEC.\\
 }
 \end{frame}
 
+\subsection{Fazit}
 \begin{frame}[t]{Fazit}\vspace{30pt}
 \begin{figure}
 \center
@@ -744,6 +774,7 @@ eigentliches Clustering Kmeans.\\
 }
 \end{frame}
 
+\subsection{Autoren}
 \begin{frame}[t]{Von wem ist das Paper}\vspace{30pt}
 \begin{figure}
 \center
@@ -759,7 +790,7 @@ University of Washington\\
 \end{frame}
 
 
-\section{Referenzen}
+\subsection{Referenzen}
 \begin{frame}[t]{Referenzen}\vspace{4pt}
 \begin{thebibliography}{10}
 \bibitem{steinbach}
